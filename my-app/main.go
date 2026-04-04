@@ -2,16 +2,20 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"log"
 	"os"
+	"sort"
+	//"time"
+	"sync"
+
+	"github.com/mattn/go-runewidth"
 )
 
 type MyString string
 
 type User struct {
 	Name string
-	Age int
+	Age  int
 }
 
 type Value int
@@ -20,14 +24,14 @@ type Speaker interface {
 	Speak() error
 }
 
-type Dog struct {}
+type Dog struct{}
 
 func (d *Dog) Speak() error {
 	fmt.Println("BowWow")
 	return nil
 }
 
-type Cat struct {}
+type Cat struct{}
 
 func (c *Cat) Speak() error {
 	fmt.Println("Meow")
@@ -55,6 +59,17 @@ func doSomething() {
 	n = 2
 }
 
+func sendMessage(msg string) {
+	println(msg)
+}
+
+func server(ch chan string) {
+	defer close(ch)
+	ch <- "one"
+	ch <- "two"
+	ch <- "three"
+}
+
 func main() {
 	m := make(map[string]int)
 	m["John"] = 23
@@ -79,9 +94,9 @@ func main() {
 	a = "foo"
 	fmt.Println(a)
 
-	user := User {
+	user := User{
 		Name: "Bob",
-		Age: 18,
+		Age:  18,
 	}
 
 	showName(&user)
@@ -123,13 +138,76 @@ func main() {
 	}
 	fmt.Println(string(k[:nn]))
 
-	defer fmt.Println("6")
-	defer fmt.Println("5")
-	defer fmt.Println("4")
-	fmt.Println("1")
-	fmt.Println("2")
-	fmt.Println("3")
+	//defer fmt.Println("6")
+	//defer fmt.Println("5")
+	//defer fmt.Println("4")
+	//fmt.Println("1")
+	//fmt.Println("2")
+	//fmt.Println("3")
 
 	//doSomething()
+
+	//message := "hi"
+	//go func() {
+	//sendMessage(message)
+	//}()
+
+	//message = "ho"
+
+	//time.Sleep(time.Second)
+	//println(message)
+	//time.Sleep(time.Second)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		vv := i
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			fmt.Println(vv)
+		}()
+	}
+	wg.Wait()
+
+	aa := 0
+
+	var mu sync.Mutex
+
+	var wg2 sync.WaitGroup
+	wg2.Add(2)
+
+	go func() {
+		defer wg2.Done()
+		for i := 0; i < 1000; i++ {
+			mu.Lock()
+			aa++
+			mu.Unlock()
+		}
+	}()
+
+	go func() {
+		defer wg2.Done()
+		for i := 0; i < 1000; i++ {
+			mu.Lock()
+			aa++
+			mu.Unlock()
+		}
+	}()
+
+	wg2.Wait()
+	fmt.Println(aa)
+
+	var bb string
+	ch := make(chan string)
+	go server(ch)
+
+	bb = <-ch
+	fmt.Println(bb)
+	bb = <-ch
+	fmt.Println(bb)
+	bb = <-ch
+	fmt.Println(bb)
+
+	fmt.Println(runewidth.StringWidth("こんにちは"))
 
 }

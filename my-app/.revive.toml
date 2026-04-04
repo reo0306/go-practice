@@ -1,0 +1,2 @@
+[rule.var-naming]
+  arguments = [["ID", "URL", "HTTP", "TLS", "XML", "JSON", "SQL"]]
