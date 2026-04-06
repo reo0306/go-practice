@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Fruit int
 
 const (
@@ -12,7 +14,7 @@ func (i Fruit) String() string {
 	switch i {
 	case Apple:
 		return "Apple"
-	case Orage:
+	case Orange:
 		return "Orage"
 	case Banana:
 		return "Banana"
