@@ -63,7 +63,7 @@ func sendMessage(msg string) {
 	println(msg)
 }
 
-func server(ch chan string) {
+func server2(ch chan string) {
 	defer close(ch)
 	ch <- "one"
 	ch <- "two"
@@ -199,7 +199,7 @@ func Part3() {
 
 	var bb string
 	ch := make(chan string)
-	go server(ch)
+	go server2(ch)
 
 	bb = <-ch
 	fmt.Println(bb)

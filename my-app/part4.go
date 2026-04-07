@@ -41,7 +41,15 @@ func iter1[T any](a []T) iter.Seq[string] {
 	}
 }
 
+func doSomething2(args ...string) {
+	for _, arg := range args {
+		fmt.Println(arg)
+	}
+}
+
 func Part4() {
+	doSomething2("Hello", "World!", "Golang")
+
 	for v := range iter1([]int{4,5,6}) {
 		println(v)
 	}
