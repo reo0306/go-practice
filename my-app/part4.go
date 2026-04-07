@@ -6,6 +6,7 @@ import (
 	"time"
 	"sync"
 	"context"
+	"iter"
 )
 
 type F struct {
@@ -30,8 +31,34 @@ func ff(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
+func iter1[T any](a []T) iter.Seq[string] {
+	return func(yield func(string) bool) {
+		for _, v := range a {
+			if !yield(fmt.Sprint(v)) {
+				break
+			}
+		}
+	}
+}
 
 func Part4() {
+	for v := range iter1([]int{4,5,6}) {
+		println(v)
+	}
+
+	iter1 := func(yield func(string) bool) {
+		a := []int{1, 2, 3}
+		for _, v := range a {
+			if !yield(fmt.Sprint(v)) {
+				break
+			}
+		}
+	}
+
+	for v := range iter1 {
+		println(v)
+	}
+
 	f := &F{
 		Name: "John",
 		Age: 20,
