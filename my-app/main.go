@@ -33,4 +33,6 @@ func main() {
 	if err := svr.Start(); err != nil {
 		log.Fatal(err)
 	}
+
+	Part5()
 }
