@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	//"net/http"
 	"html/template"
 	"log"
+	"log/slog"
 	"os"
 )
 
@@ -23,8 +24,13 @@ func Part5() {
 		log.Fatal(err2)
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello World")
-	})
-	http.ListenAndServe(":8080", nil)
+	slog.Info("test", "Level", "Info")
+	slog.Debug("test", "Level", "Debug")
+	slog.Warn("test", "Level", "Warn")
+	slog.Error("test", "Level", "Error")
+
+	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		//fmt.Fprintf(w, "Hello World")
+	//})
+	//http.ListenAndServe(":8080", nil)
 }

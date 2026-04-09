@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 	"time"
 
@@ -12,6 +13,8 @@ var name = "John"
 
 func init() {
 	println("Hi! " + name)
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, nil)))
+
 }
 
 func main() {
