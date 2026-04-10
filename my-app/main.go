@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"time"
+	"fmt"
 
 	"my-app/server"
 )
@@ -38,4 +39,9 @@ func main() {
 	}
 
 	Part5()
+
+	ch := Generator("Hello")
+	for i := 0; i < 5; i++ {
+		fmt.Println(<-ch)
+	}
 }
