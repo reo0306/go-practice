@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 	"fmt"
+	"math/rand"
 
 	"my-app/server"
 )
@@ -49,4 +50,22 @@ func main() {
 	for i := 0; i < 10; i++ {
 		fmt.Println(<- ch2)
 	}
+
+	ch3 := Generator3("Hi")
+	for i := 0; i < 10; i++ {
+		select {
+		case s := <-ch3:
+			fmt.Println(s)
+		case <-time.After(1 * time.Second):
+			fmt.Println("Waited too long!")
+			return
+		}
+	}
+
+	quit := make(chan bool)
+	ch4 := Generator4("Hi!", quit)
+	for i := rand.Intn(50); i >= 0; i-- {
+		fmt.Println(<-ch4, i)
+	}
+	quit <- true
 }
