@@ -44,4 +44,9 @@ func main() {
 	for i := 0; i < 5; i++ {
 		fmt.Println(<-ch)
 	}
+
+	ch2 := FanIn(Generator2("Hello"), Generator2("Byb"))
+	for i := 0; i < 10; i++ {
+		fmt.Println(<- ch2)
+	}
 }
