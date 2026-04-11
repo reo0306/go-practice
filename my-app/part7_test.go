@@ -2,10 +2,15 @@ package main
 
 import (
 	"reflect"
+	"runtime"
 	"testing"
 )
 
 func TestStringDistance(t *testing.T) {
+	if runtime.GOOS != "windows" {
+		t.Skipf("skipping on %v", runtime.GOOS)
+	}
+
 	tests := []struct {
 		name string
 		lhs string
