@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 func StringDistance(lhs, rhs string) int {
 	return Distance([]rune(lhs), []rune(rhs))
 }
@@ -19,3 +21,8 @@ func Distance(a, b []rune) int {
 }
 
 
+func Add(a, b int) int {
+	result := a + b
+	time.Sleep(3 * time.Second)
+	return result
+}
