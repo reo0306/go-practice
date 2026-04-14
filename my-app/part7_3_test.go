@@ -17,10 +17,14 @@ func TestAdd(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := Add(test.lhs, test.rhs)
-		if got != test.want {
-			t.Errorf("%v: want %v, but %v:", test.name, test.want, got)
-		}
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := Add(test.lhs, test.rhs)
+			if got != test.want {
+				t.Errorf("%v: want %v, but %v:", test.name, test.want, got)
+			}
+		})
 	}
 }
 
