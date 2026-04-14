@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
-func FuzzDoSomething(t *testing.T) {
+func FuzzDoSomething(f *testing.F) {
+	f.Add(3, "test&&")
+	f.Fuzz(func(f *testing.T, i int, s string) {
+		doSomething(i, s)
+	})
 }
 
