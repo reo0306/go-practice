@@ -5,6 +5,8 @@ import (
 	"log"
 	"regexp"
 	"strings"
+	"path"
+	"net/url"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -39,6 +41,7 @@ func findEntries(siteURL string) ([]Entry, error) {
 }
 
 func findAuthorAndZIP(siteURL string) (string, string) {
+	log.Println("query", siteURL)
 	doc, err := goquery.NewDocument(siteURL)
 	if err != nil {
 		return "", ""
@@ -54,7 +57,23 @@ func findAuthorAndZIP(siteURL string) (string, string) {
 		}
 	})
 
-	return author, zipURL
+	if zipURL == "" {
+		return author, ""
+	}
+
+	if strings.HasPrefix(zipURL, "http://") || strings.HasPrefix(zipURL, "https://") {
+		return author, zipURL
+	}
+
+	u, err := url.Parse(siteURL)
+	if err != nil {
+		return author, ""
+	}
+
+	u.Path = path.Join(path.Dir(u.Path), zipURL)
+
+
+	return author, u.String()
 }
 
 func main() {
