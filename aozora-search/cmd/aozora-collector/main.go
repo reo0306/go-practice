@@ -7,6 +7,8 @@ import (
 	"strings"
 	"path"
 	"net/url"
+	"archive/zip"
+	"golang.org/x/text/encoding/japanese"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -27,17 +29,30 @@ func findEntries(siteURL string) ([]Entry, error) {
 	}
 
 	pat := regexp.MustCompile(`.*/cards/([0-9]+)/card([0-9]+).html$`)
+	entries := []Entry{}
 	doc.Find("ol li a").Each(func(n int, elem *goquery.Selection) {
 		token := pat.FindStringSubmatch(elem.AttrOr("href", ""))
 		if len(token) != 3 {
 			return
 		}
-		pageURL := fmt.Sprintf("https://www.aozora.gr.jp/cards/%s/card%s.html", token[1], token[2])
-		_, zipURL := findAuthorAndZIP(pageURL)
-		println(zipURL)
-	})
 
-	return nil, nil
+		title := elem.Text()
+		pageURL := fmt.Sprintf("https://www.aozora.gr.jp/cards/%s/card%s.html", token[1], token[2])
+		author, zipURL := findAuthorAndZIP(pageURL)
+		if zipURL != "" {
+			entries = append(entries, Entry{
+				AuthorID: token[1],
+				Author: author,
+				TitleID: token[2],
+				Title: title,
+				SiteURL: siteURL,
+				ZipURL: zipURL,
+			})
+		}
+	})
+			
+
+	return entries, nil
 }
 
 func findAuthorAndZIP(siteURL string) (string, string) {
@@ -76,6 +91,40 @@ func findAuthorAndZIP(siteURL string) (string, string) {
 	return author, u.String()
 }
 
+func extractText(zipURL string) (string, error) {
+	resp, err := http.Get(zipURL)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	r, err := zip.NewReader(bytes.NewReader(b), int64(len(b)))
+	for _, file := range r.File {
+		if path.Ext(file.Name) == ".txt" {
+			f, err := file.Open()
+			if err != nil {
+				return "", err
+			}
+			b, err := ioutil.ReadAll(f)
+			f.Close()
+			if err != nil {
+				return "", err
+			}
+			b, err := japanese.ShiftJIS.NewDecoder().Bytes(b)
+			if err != nil {
+				return "", err
+			}
+			return string(b), nil
+		}
+	}
+	return "", errors.New("contens not found")
+}
+
 func main() {
 	listURL := "https://www.aozora.gr.jp/index_pages/person879.html"
 
@@ -84,7 +133,13 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, entry := range entries {
-		fmt.Println(entry.Title, entry.ZipURL)
+		content, err := extractText(entry.ZipURL)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		fmt.Println(entry.SiteURL)
+		fmt.Println(content)
 	}
 }
 
